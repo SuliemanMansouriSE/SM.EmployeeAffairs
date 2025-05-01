@@ -1,0 +1,38 @@
+﻿@page "/AdministrationList"
+@using SM.EmployeeAffairs.Data.Entities
+@rendermode InteractiveServer
+
+@inject AdministrationDesignServices _administrationDesignServices
+
+<MudTable Items="Administrations" Hover="true" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Description</MudTh>
+        
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="الاسم">@context.Name</MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
+        
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private bool _loading = false;
+    public List<Administration> Administrations { get; set; } = new List<Administration>();
+    
+   
+    
+    protected override async Task OnInitializedAsync()
+    {
+        
+        _loading = true;
+        await Task.Delay(1000);
+        Administrations = _administrationDesignServices.GetAdministrations();
+        _loading = false;
+        
+        
+    }
+}

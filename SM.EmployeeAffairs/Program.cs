@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using SM.EmployeeAffairs.Components;
 using SM.EmployeeAffairs.Components.Account;
+using SM.EmployeeAffairs.Components.Pages.AdministrationComponents;
 using SM.EmployeeAffairs.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,8 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddScoped<AdministrationDesignServices>();
 
 builder.Services.AddAuthentication(options =>
     {
