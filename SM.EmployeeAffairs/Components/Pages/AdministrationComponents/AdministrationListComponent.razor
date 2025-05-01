@@ -1,22 +1,25 @@
 ﻿@page "/AdministrationList"
-@using SM.EmployeeAffairs.Data.Entities
-@rendermode InteractiveServer
 
 @inject NavigationManager NavigationManager
 @inject IAdministrationService _administrationDesignServices
+@inject ISnackbar snackbar
+@inject IDialogService DialogService
+@rendermode InteractiveServer
+@using SM.EmployeeAffairs.Data.Entities
+
 
 <MudTable Items="Administrations"
-          Hover="true"
-          Loading="@_loading"
-          LoadingProgressColor="Color.Info"
-          Dense="true">
+Hover="true"
+Loading="@_loading"
+LoadingProgressColor="Color.Info"
+Dense="true">
 
     <ToolBarContent>
         <MudSpacer />
         <MudButton Color="Color.Primary"
-                   Variant="Variant.Filled"
-                   StartIcon="@Icons.Material.Filled.Add"
-                   @onclick="NavigateToAddAdministration">Add</MudButton>
+        Variant="Variant.Filled"
+        StartIcon="@Icons.Material.Filled.Add"
+        @onclick="NavigateToAddAdministration">Add</MudButton>
     </ToolBarContent>
 
     <HeaderContent>
@@ -33,14 +36,14 @@
         <MudTd DataLabel="Description">@context.Description</MudTd>
         <MudTd>
             <MudButton Color="Color.Primary"
-                       Variant="Variant.Filled"
-                       StartIcon="@Icons.Material.Filled.Edit"
-                       OnClick="()=>NavigateToAddAdministration(context)"/>
+            Variant="Variant.Filled"
+            StartIcon="@Icons.Material.Filled.Edit"
+            OnClick="()=>NavigateToAddAdministration(context)"/>
 
             <MudButton Color="Color.Error"
-                       Variant="Variant.Filled"
-                       StartIcon="@Icons.Material.Filled.Delete"
-                       OnClick="()=> DeleteAdministration(context)" />
+            Variant="Variant.Filled"
+            StartIcon="@Icons.Material.Filled.Delete"
+            OnClick="()=> DeleteAdministration(context)" />
 
         </MudTd>
     </RowTemplate>
@@ -72,9 +75,12 @@
         NavigationManager.NavigateTo($"/AdministrationEdit/{administration.Id}");
     }
 
-    public void DeleteAdministration(Administration administration)
+    public async Task DeleteAdministration(Administration administration)
     {
+        // await _administrationDesignServices.DeleteAsync(administration);
         Administrations.Remove(administration);
+        snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        snackbar.Add("تم الحذف بنجاح", Severity.Success);
 
     }
 }

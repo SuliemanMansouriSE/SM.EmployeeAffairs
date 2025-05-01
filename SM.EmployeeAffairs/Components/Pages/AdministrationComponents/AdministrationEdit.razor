@@ -1,10 +1,11 @@
 ﻿@page "/AdministrationEdit"
 @page "/AdministrationEdit/{Id:guid}"
-@using SM.EmployeeAffairs.Data.Entities
-
 @inject IAdministrationService _administrationDesignServices
-@inject ISnackbar _snackbar
+@inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+@using SM.EmployeeAffairs.Data.Entities
 
 @if (Administration == null)
 {
@@ -15,25 +16,34 @@
 else
 {
 
-    <MudCard Elevation="6">
-        <MudForm Model="Administration" @ref="form">
+    <MudForm Model="Administration" @ref="form">
+        <MudCard Elevation="6">
             <MudCardHeader>
                 <MudText Typo="Typo.h5" Align="Align.Center">@PageHeaderText</MudText>
             </MudCardHeader>
+            <MudItem xs="12" md="12" lg="12">
+                <MudTextField @bind-Value="Administration.Name"
+                              Label="Name"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense" />
+            </MudItem>
+            <MudItem xs="12" md="12" lg="12">
+                <MudTextField @bind-Value="Administration.Description"
+                              Label="Description"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense" />
+            </MudItem>
 
-            <MudTextField @bind-Value="Administration.Name" Label="Name" />
-            <MudTextField @bind-Value="Administration.Description" Label="Description" />
-        </MudForm>
-
-        <MudCardActions Class="d-flex justify-end mt-2">
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Primary"
-                       OnClick="HandleSaveAsync">حفظ</MudButton>
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       OnClick="HandleSaveAndCloseAsync">حفظ و إغلاق</MudButton>
-        </MudCardActions>
-    </MudCard>
+            <MudCardActions Class="d-flex justify-end mt-2">
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           OnClick="HandleSaveAsync">حفظ</MudButton>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           OnClick="HandleSaveAndCloseAsync">حفظ و إغلاق</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudForm>
 }
 
 @code {
@@ -41,14 +51,14 @@ else
     protected bool success = false;
     private string PageHeaderText = "Add New Administration";
 
-    [Parameter] public string Id { get; set; } = string.Empty;
+    [Parameter] public Guid Id { get; set; } 
 
     private Administration? Administration { get; set; } = new Administration();
 
 
     protected override async Task OnInitializedAsync()
     {
-        if (string.IsNullOrEmpty(Id.ToString()))
+        if (Id == Guid.Empty)
         {
             PageHeaderText = "Add New Administration";
             Administration = new Administration();
@@ -56,21 +66,23 @@ else
         else
         {
             PageHeaderText = "Edit Administration";
-            Administration = await _administrationDesignServices.GetAdministrationById(Guid.Parse(Id));
+            Administration = await _administrationDesignServices.GetAdministrationById(Id);
         }
     }
-       
-    
+
+
 
     private async Task HandleSaveAsync()
     {
         await _administrationDesignServices.Upsert(Administration);
-        _snackbar.Add("تم الحفظ بنجاح", Severity.Success);
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Add("تم الحفظ بنجاح", Severity.Success);
     }
 
     private async Task HandleSaveAndCloseAsync()
     {
         await _administrationDesignServices.Upsert(Administration);
+        
         NavigationManager.NavigateTo("/AdministrationList", true);
     }
 
