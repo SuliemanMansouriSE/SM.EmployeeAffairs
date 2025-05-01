@@ -2,7 +2,7 @@
 
 namespace SM.EmployeeAffairs.Components.Pages.AdministrationComponents
 {
-    public class AdministrationDesignServices
+    public class AdministrationDesignServices : IAdministrationServices
     {
         public List<Administration> GetAdministrations()
         {
