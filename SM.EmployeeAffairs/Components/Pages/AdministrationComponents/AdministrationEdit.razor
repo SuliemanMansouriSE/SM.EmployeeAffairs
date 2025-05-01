@@ -2,35 +2,76 @@
 @page "/AdministrationEdit/{Id:guid}"
 @using SM.EmployeeAffairs.Data.Entities
 
-<h3>AdministrationEdit</h3>
+@inject IAdministrationService _administrationDesignServices
+@inject ISnackbar _snackbar
+@inject NavigationManager NavigationManager
 
-<MudTextField @bind-Value="Administration.Name" Label="Name" />
-<MudTextField @bind-Value="Administration.Description" Label="Description" />
-<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="Save">Save</MudButton>
+@if (Administration == null)
+{
+    <div class="d-flex justify-center align-center ma-auto">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </div>
+}
+else
+{
+
+    <MudCard Elevation="6">
+        <MudForm Model="Administration" @ref="form">
+            <MudCardHeader>
+                <MudText Typo="Typo.h5" Align="Align.Center">@PageHeaderText</MudText>
+            </MudCardHeader>
+
+            <MudTextField @bind-Value="Administration.Name" Label="Name" />
+            <MudTextField @bind-Value="Administration.Description" Label="Description" />
+        </MudForm>
+
+        <MudCardActions Class="d-flex justify-end mt-2">
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Primary"
+                       OnClick="HandleSaveAsync">حفظ</MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="HandleSaveAndCloseAsync">حفظ و إغلاق</MudButton>
+        </MudCardActions>
+    </MudCard>
+}
 
 @code {
+    protected MudForm? form;
+    protected bool success = false;
+    private string PageHeaderText = "Add New Administration";
 
-    [Parameter] public Guid Id { get; set; }
-    
-    private Administration Administration { get; set; } = new Administration();
-    
-    
+    [Parameter] public string Id { get; set; } = string.Empty;
+
+    private Administration? Administration { get; set; } = new Administration();
+
+
     protected override async Task OnInitializedAsync()
     {
-        // Simulate fetching data from a service
-        await Task.Delay(1000);
-        Administration = new Administration
-            {
-                Id = Id,
-                Name = "Sample Administration"
-            };
+        if (string.IsNullOrEmpty(Id.ToString()))
+        {
+            PageHeaderText = "Add New Administration";
+            Administration = new Administration();
+        }
+        else
+        {
+            PageHeaderText = "Edit Administration";
+            Administration = await _administrationDesignServices.GetAdministrationById(Guid.Parse(Id));
+        }
     }
+       
     
-    private async Task Save()
+
+    private async Task HandleSaveAsync()
     {
-        // Simulate saving data to a service
-        await Task.Delay(1000);
-        Console.WriteLine($"Saved Administration: {Administration.Name}");
+        await _administrationDesignServices.Upsert(Administration);
+        _snackbar.Add("تم الحفظ بنجاح", Severity.Success);
+    }
+
+    private async Task HandleSaveAndCloseAsync()
+    {
+        await _administrationDesignServices.Upsert(Administration);
+        NavigationManager.NavigateTo("/AdministrationList", true);
     }
 
 }

@@ -5,14 +5,20 @@
 @inject NavigationManager NavigationManager
 @inject IAdministrationService _administrationDesignServices
 
-<MudTable Items="Administrations" Hover="true" Loading="@_loading" LoadingProgressColor="Color.Info">
+<MudTable Items="Administrations"
+          Hover="true"
+          Loading="@_loading"
+          LoadingProgressColor="Color.Info"
+          Dense="true">
+
     <ToolBarContent>
         <MudSpacer />
         <MudButton Color="Color.Primary"
-        Variant="Variant.Filled"
-        StartIcon="@Icons.Material.Filled.Add"
-        @onclick="NavigateToAddAdministration">Add</MudButton>
+                   Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   @onclick="NavigateToAddAdministration">Add</MudButton>
     </ToolBarContent>
+
     <HeaderContent>
         <MudTh>Id</MudTh>
         <MudTh>Name</MudTh>
@@ -20,19 +26,21 @@
         <MudTh>Operations</MudTh>
 
     </HeaderContent>
+
     <RowTemplate>
         <MudTd DataLabel="Id">@context.Id</MudTd>
         <MudTd DataLabel="الاسم">@context.Name</MudTd>
         <MudTd DataLabel="Description">@context.Description</MudTd>
         <MudTd>
             <MudButton Color="Color.Primary"
-            Variant="Variant.Filled"
-            StartIcon="@Icons.Material.Filled.Edit"/>
+                       Variant="Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.Edit"
+                       OnClick="()=>NavigateToAddAdministration(context)"/>
 
             <MudButton Color="Color.Error"
-            Variant="Variant.Filled"
-            StartIcon="@Icons.Material.Filled.Delete"
-            OnClick="()=> DeleteAdministration(context)"/>
+                       Variant="Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.Delete"
+                       OnClick="()=> DeleteAdministration(context)" />
 
         </MudTd>
     </RowTemplate>
@@ -57,6 +65,11 @@
     public void NavigateToAddAdministration()
     {
         NavigationManager.NavigateTo("/AdministrationEdit");
+    }
+
+    public void NavigateToAddAdministration(Administration administration)
+    {
+        NavigationManager.NavigateTo($"/AdministrationEdit/{administration.Id}");
     }
 
     public void DeleteAdministration(Administration administration)
