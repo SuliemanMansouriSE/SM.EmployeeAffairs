@@ -1,9 +1,10 @@
 ﻿@page "/AdministrationList"
-
 @inject NavigationManager NavigationManager
 @inject IAdministrationService _administrationDesignServices
 @inject ISnackbar snackbar
 @inject IDialogService DialogService
+
+
 @rendermode InteractiveServer
 @using SM.EmployeeAffairs.Data.Entities
 
@@ -77,7 +78,7 @@ Dense="true">
 
     public async Task DeleteAdministration(Administration administration)
     {
-        // await _administrationDesignServices.DeleteAsync(administration);
+        await _administrationDesignServices.DeleteAsync(administration);
         Administrations.Remove(administration);
         snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         snackbar.Add("تم الحذف بنجاح", Severity.Success);
