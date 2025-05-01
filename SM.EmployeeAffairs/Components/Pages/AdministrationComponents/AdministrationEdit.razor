@@ -1,0 +1,36 @@
+﻿@page "/AdministrationEdit"
+@page "/AdministrationEdit/{Id:guid}"
+@using SM.EmployeeAffairs.Data.Entities
+
+<h3>AdministrationEdit</h3>
+
+<MudTextField @bind-Value="Administration.Name" Label="Name" />
+<MudTextField @bind-Value="Administration.Description" Label="Description" />
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="Save">Save</MudButton>
+
+@code {
+
+    [Parameter] public Guid Id { get; set; }
+    
+    private Administration Administration { get; set; } = new Administration();
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate fetching data from a service
+        await Task.Delay(1000);
+        Administration = new Administration
+            {
+                Id = Id,
+                Name = "Sample Administration"
+            };
+    }
+    
+    private async Task Save()
+    {
+        // Simulate saving data to a service
+        await Task.Delay(1000);
+        Console.WriteLine($"Saved Administration: {Administration.Name}");
+    }
+
+}

@@ -2,37 +2,67 @@
 @using SM.EmployeeAffairs.Data.Entities
 @rendermode InteractiveServer
 
+@inject NavigationManager NavigationManager
 @inject AdministrationDesignServices _administrationDesignServices
 
 <MudTable Items="Administrations" Hover="true" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <ToolBarContent>
+        <MudSpacer />
+        <MudButton Color="Color.Primary"
+                   Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   @onclick="NavigateToAddAdministration">Add</MudButton>
+    </ToolBarContent>
     <HeaderContent>
         <MudTh>Id</MudTh>
         <MudTh>Name</MudTh>
         <MudTh>Description</MudTh>
-        
+        <MudTh>Operations</MudTh>
+
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.Id</MudTd>
         <MudTd DataLabel="الاسم">@context.Name</MudTd>
         <MudTd DataLabel="Description">@context.Description</MudTd>
-        
+        <MudTd>
+            <MudButton Color="Color.Primary"
+            Variant="Variant.Filled"
+            StartIcon="@Icons.Material.Filled.Edit"/>
+            
+            <MudButton Color="Color.Error"
+            Variant="Variant.Filled"
+            StartIcon="@Icons.Material.Filled.Delete"
+            OnClick="()=> DeleteAdministration(context)"/>
+
+        </MudTd>
     </RowTemplate>
 </MudTable>
 
 @code {
     private bool _loading = false;
     public List<Administration> Administrations { get; set; } = new List<Administration>();
-    
-   
-    
+
+
+
     protected override async Task OnInitializedAsync()
     {
-        
+
         _loading = true;
         await Task.Delay(1000);
         Administrations = _administrationDesignServices.GetAdministrations();
         _loading = false;
-        
-        
+
+
+    }
+
+    public void NavigateToAddAdministration()
+    {
+        NavigationManager.NavigateTo("/AdministrationEdit");
+    }
+
+    public void DeleteAdministration(Administration administration)
+    {
+        Administrations.Remove(administration);
+
     }
 }
