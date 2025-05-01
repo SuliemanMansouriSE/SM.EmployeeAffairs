@@ -21,7 +21,7 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddScoped<IAdministrationServices, AdministrationServices>();
+builder.Services.AddScoped<IAdministrationService, AdministrationService>();
 
 builder.Services.AddAuthentication(options =>
     {
