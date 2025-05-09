@@ -25,13 +25,13 @@ else
             </MudCardHeader>
             <MudItem xs="12" md="12" lg="12">
                 <MudTextField @bind-Value="Administration.Name"
-                              Label="Name"
+                              Label="الإسم"
                               Variant="Variant.Outlined"
                               Margin="Margin.Dense" />
             </MudItem>
             <MudItem xs="12" md="12" lg="12">
                 <MudTextField @bind-Value="Administration.Description"
-                              Label="Description"
+                              Label="الوصف"
                               Variant="Variant.Outlined"
                               Margin="Margin.Dense" />
             </MudItem>
@@ -51,7 +51,7 @@ else
 @code {
     protected MudForm? form;
     protected bool success = false;
-    private string PageHeaderText = "Add New Administration";
+    private string PageHeaderText = "إضافة إدارة جديدة";
 
     [Parameter] public Guid Id { get; set; } 
 
@@ -62,12 +62,12 @@ else
     {
         if (Id == Guid.Empty)
         {
-            PageHeaderText = "Add New Administration";
+            PageHeaderText = "إضافة إدارة جديدة";
             Administration = new Administration();
         }
         else
         {
-            PageHeaderText = "Edit Administration";
+            PageHeaderText = "تعديل إدارة";
             Administration = await _administrationDesignServices.GetAdministrationById(Id);
         }
     }

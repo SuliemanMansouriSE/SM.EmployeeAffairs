@@ -1,6 +1,6 @@
 ﻿@page "/AdministrationList"
 @inject NavigationManager NavigationManager
-@inject IAdministrationService _administrationDesignServices
+@inject IAdministrationService _administrationServices
 @inject ISnackbar snackbar
 @inject IDialogService DialogService
 
@@ -20,28 +20,28 @@
         <MudButton Color="Color.Primary"
                    Variant="Variant.Filled"
                    StartIcon="@Icons.Material.Filled.Add"
-                   @onclick="NavigateToAddAdministration">Add</MudButton>
+                   @onclick="NavigateToAddAdministration">إضافة</MudButton>
     </ToolBarContent>
 
     <HeaderContent>
-        <MudTh>Id</MudTh>
-        <MudTh>Name</MudTh>
-        <MudTh>Description</MudTh>
-        <MudTh>Operations</MudTh>
+        <MudTh>رقم معرف</MudTh>
+        <MudTh>الإسم</MudTh>
+        <MudTh>الوصف</MudTh>
+        <MudTh>العمليات</MudTh>
 
     </HeaderContent>
 
     <RowTemplate>
-        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="رقم معرف">@context.Id</MudTd>
         <MudTd DataLabel="الاسم">@context.Name</MudTd>
-        <MudTd DataLabel="Description">@context.Description</MudTd>
+        <MudTd DataLabel="الوصف">@context.Description</MudTd>
         <MudTd>
-            <MudTooltip Text="Edit">
+            <MudTooltip Text="تعديل">
                 <MudIconButton Color="Color.Primary"
                                Icon="@Icons.Material.Filled.Edit"
                                OnClick="()=>NavigateToAddAdministration(context)" />
             </MudTooltip>
-            <MudTooltip Text="Delete">
+            <MudTooltip Text="حذف">
                 <MudIconButton Color="Color.Error"
                                Icon="@Icons.Material.Filled.Delete"
                                OnClick="()=> DeleteAdministration(context)" />
@@ -60,7 +60,7 @@
     {
 
         _loading = true;
-        Administrations = await _administrationDesignServices.GetAdministrations();
+        Administrations = await _administrationServices.GetAdministrations();
         _loading = false;
 
 
@@ -78,8 +78,10 @@
 
     public async Task DeleteAdministration(Administration administration)
     {
-        await _administrationDesignServices.DeleteAsync(administration);
+        await _administrationServices.DeleteAsync(administration);
+        
         Administrations.Remove(administration);
+        
         snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         snackbar.Add("تم الحذف بنجاح", Severity.Success);
 

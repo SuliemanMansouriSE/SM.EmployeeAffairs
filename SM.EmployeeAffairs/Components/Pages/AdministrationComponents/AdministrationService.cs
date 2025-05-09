@@ -16,6 +16,7 @@ namespace SM.EmployeeAffairs.Components.Pages.AdministrationComponents
         public async Task DeleteAsync(Administration administration)
         {
             var _dbContext = _dbContextFactory.CreateDbContext();
+
             var existingAdministration = _dbContext.Administrations
                 .Find(administration.Id);
             if (existingAdministration != null)
@@ -42,8 +43,10 @@ namespace SM.EmployeeAffairs.Components.Pages.AdministrationComponents
         public async Task<Administration> Upsert(Administration administration)
         {
             var _dbContext = _dbContextFactory.CreateDbContext();
+
             var existingAdministration = await _dbContext.Administrations
                 .FirstOrDefaultAsync(a => a.Id == administration.Id);
+
             if (existingAdministration != null)
             {
                 // Update existing administration
