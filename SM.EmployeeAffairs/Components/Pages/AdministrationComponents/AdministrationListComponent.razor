@@ -10,17 +10,17 @@
 
 
 <MudTable Items="Administrations"
-Hover="true"
-Loading="@_loading"
-LoadingProgressColor="Color.Info"
-Dense="true">
+          Hover="true"
+          Loading="@_loading"
+          LoadingProgressColor="Color.Info"
+          Dense="true">
 
     <ToolBarContent>
         <MudSpacer />
         <MudButton Color="Color.Primary"
-        Variant="Variant.Filled"
-        StartIcon="@Icons.Material.Filled.Add"
-        @onclick="NavigateToAddAdministration">Add</MudButton>
+                   Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   @onclick="NavigateToAddAdministration">Add</MudButton>
     </ToolBarContent>
 
     <HeaderContent>
@@ -36,16 +36,16 @@ Dense="true">
         <MudTd DataLabel="الاسم">@context.Name</MudTd>
         <MudTd DataLabel="Description">@context.Description</MudTd>
         <MudTd>
-            <MudButton Color="Color.Primary"
-            Variant="Variant.Filled"
-            StartIcon="@Icons.Material.Filled.Edit"
-            OnClick="()=>NavigateToAddAdministration(context)"/>
-
-            <MudButton Color="Color.Error"
-            Variant="Variant.Filled"
-            StartIcon="@Icons.Material.Filled.Delete"
-            OnClick="()=> DeleteAdministration(context)" />
-
+            <MudTooltip Text="Edit">
+                <MudIconButton Color="Color.Primary"
+                               Icon="@Icons.Material.Filled.Edit"
+                               OnClick="()=>NavigateToAddAdministration(context)" />
+            </MudTooltip>
+            <MudTooltip Text="Delete">
+                <MudIconButton Color="Color.Error"
+                               Icon="@Icons.Material.Filled.Delete"
+                               OnClick="()=> DeleteAdministration(context)" />
+            </MudTooltip>
         </MudTd>
     </RowTemplate>
 </MudTable>
