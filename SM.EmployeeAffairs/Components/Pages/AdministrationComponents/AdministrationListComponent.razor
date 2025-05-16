@@ -1,20 +1,16 @@
 ﻿@page "/AdministrationList"
 @inject NavigationManager NavigationManager
-@inject IAdministrationService _administrationServices
+@inject HttpClient Http
 @inject ISnackbar snackbar
 @inject IDialogService DialogService
-
-
-@rendermode InteractiveServer
+rendermode InteractiveServer
 @using SM.EmployeeAffairs.Data.Entities
-
 
 <MudTable Items="Administrations"
           Hover="true"
           Loading="@_loading"
           LoadingProgressColor="Color.Info"
           Dense="true">
-
     <ToolBarContent>
         <MudSpacer />
         <MudButton Color="Color.Primary"
@@ -22,15 +18,12 @@
                    StartIcon="@Icons.Material.Filled.Add"
                    @onclick="NavigateToAddAdministration">إضافة</MudButton>
     </ToolBarContent>
-
     <HeaderContent>
         <MudTh>رقم معرف</MudTh>
         <MudTh>الإسم</MudTh>
         <MudTh>الوصف</MudTh>
         <MudTh>العمليات</MudTh>
-
     </HeaderContent>
-
     <RowTemplate>
         <MudTd DataLabel="رقم معرف">@context.Id</MudTd>
         <MudTd DataLabel="الاسم">@context.Name</MudTd>
@@ -54,16 +47,11 @@
     private bool _loading = false;
     public List<Administration> Administrations { get; set; } = new List<Administration>();
 
-
-
     protected override async Task OnInitializedAsync()
     {
-
         _loading = true;
-        Administrations = await _administrationServices.GetAdministrations();
+        Administrations = await Http.GetFromJsonAsync<List<Administration>>("/api/administrations");
         _loading = false;
-
-
     }
 
     public void NavigateToAddAdministration()
@@ -78,12 +66,9 @@
 
     public async Task DeleteAdministration(Administration administration)
     {
-        await _administrationServices.DeleteAsync(administration);
-        
+        await Http.DeleteAsync($"/api/administrations/{administration.Id}");
         Administrations.Remove(administration);
-        
         snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         snackbar.Add("تم الحذف بنجاح", Severity.Success);
-
     }
 }

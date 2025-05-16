@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Components.Authorization;
+// With this corrected line:
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using SM.EmployeeAffairs.Components;
 using SM.EmployeeAffairs.Components.Account;
-using SM.EmployeeAffairs.Components.Pages.AdministrationComponents;
+using SM.EmployeeAffairs.Components.Pages.AdministrationComponents.Endpoints;
 using SM.EmployeeAffairs.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +22,6 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddScoped<IAdministrationService, AdministrationService>();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -29,6 +29,14 @@ builder.Services.AddAuthentication(options =>
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     })
     .AddIdentityCookies();
+
+builder.Services.AddHttpClient("Default", client =>
+{
+    
+    client.BaseAddress = new Uri("https://localhost:7065/"); // fallback to HTTPS port from launchSettings.json
+});
+
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Default"));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
@@ -77,5 +85,8 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+// Register minimal API endpoints for Administration
+app.MapAdministrationEndpoints();
 
 app.Run();

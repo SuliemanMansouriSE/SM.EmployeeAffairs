@@ -1,13 +1,12 @@
 ﻿@page "/AdministrationEdit"
 @page "/AdministrationEdit/{Id:guid}"
-@inject IAdministrationService _administrationDesignServices
+@inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
 
 @rendermode InteractiveServer
 
 @using SM.EmployeeAffairs.Data.Entities
-
 
 @if (Administration == null)
 {
@@ -17,7 +16,6 @@
 }
 else
 {
-
     <MudForm Model="Administration" @ref="form">
         <MudCard Elevation="6">
             <MudCardHeader>
@@ -35,7 +33,6 @@ else
                               Variant="Variant.Outlined"
                               Margin="Margin.Dense" />
             </MudItem>
-
             <MudCardActions Class="d-flex justify-end mt-2">
                 <MudButton Variant="Variant.Outlined"
                            Color="Color.Primary"
@@ -57,7 +54,6 @@ else
 
     private Administration? Administration { get; set; } = new Administration();
 
-
     protected override async Task OnInitializedAsync()
     {
         if (Id == Guid.Empty)
@@ -68,24 +64,35 @@ else
         else
         {
             PageHeaderText = "تعديل إدارة";
-            Administration = await _administrationDesignServices.GetAdministrationById(Id);
+            Administration = await Http.GetFromJsonAsync<Administration>($"/api/administrations/{Id}");
         }
     }
 
-
-
     private async Task HandleSaveAsync()
     {
-        await _administrationDesignServices.Upsert(Administration);
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        Snackbar.Add("تم الحفظ بنجاح", Severity.Success);
+        if (Administration?.Id == Guid.Empty)
+        {
+            var response = await Http.PostAsJsonAsync("/api/administrations", Administration);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+                Snackbar.Add("تم الحفظ بنجاح", Severity.Success);
+            }
+        }
+        else
+        {
+            var response = await Http.PutAsJsonAsync($"/api/administrations/{Administration.Id}", Administration);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+                Snackbar.Add("تم الحفظ بنجاح", Severity.Success);
+            }
+        }
     }
 
     private async Task HandleSaveAndCloseAsync()
     {
-        await _administrationDesignServices.Upsert(Administration);
-        
+        await HandleSaveAsync();
         NavigationManager.NavigateTo("/AdministrationList", true);
     }
-
 }
