@@ -1,11 +1,11 @@
 ﻿@page "/AdministrationEdit"
-@page "/AdministrationEdit/{Id:guid}"
+@page "/AdministrationEdit/{Id}"
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
-
 @rendermode InteractiveServer
 
+@using SM.EmployeeAffairs.Components.Pages.EmployeesComponents
 @using SM.EmployeeAffairs.Data.Entities
 
 @if (Administration == null)
@@ -42,7 +42,17 @@ else
                            OnClick="HandleSaveAndCloseAsync">حفظ و إغلاق</MudButton>
             </MudCardActions>
         </MudCard>
+
     </MudForm>
+    <MudSpacer />
+    <MudCard Elevation="6">
+        <CascadingValue Value="Administration.Id" Name="AdministrationId">
+            <MudCardHeader>
+                <MudText Typo="Typo.h5" Align="Align.Center">الموظفين في الإدارة</MudText>
+            </MudCardHeader>
+            <EmployeesListComponent />
+        </CascadingValue>
+    </MudCard>
 }
 
 @code {
@@ -50,13 +60,13 @@ else
     protected bool success = false;
     private string PageHeaderText = "إضافة إدارة جديدة";
 
-    [Parameter] public Guid Id { get; set; } 
+    [Parameter] public string Id { get; set; } = string.Empty;
 
-    private Administration? Administration { get; set; } = new Administration();
+    private Administration? Administration { get; set; } 
 
     protected override async Task OnInitializedAsync()
     {
-        if (Id == Guid.Empty)
+        if (string.IsNullOrEmpty(Id))
         {
             PageHeaderText = "إضافة إدارة جديدة";
             Administration = new Administration();
@@ -64,7 +74,7 @@ else
         else
         {
             PageHeaderText = "تعديل إدارة";
-            Administration = await Http.GetFromJsonAsync<Administration>($"/api/administrations/{Id}");
+            Administration = await Http.GetFromJsonAsync<Administration>($"/api/administrations/{Guid.Parse(Id)}");
         }
     }
 

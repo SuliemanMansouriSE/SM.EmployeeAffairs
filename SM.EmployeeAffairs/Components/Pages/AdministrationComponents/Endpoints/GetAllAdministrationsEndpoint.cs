@@ -1,21 +1,17 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SM.EmployeeAffairs.Data;
-using SM.EmployeeAffairs.Data.Entities;
 
-namespace SM.EmployeeAffairs.Components.Pages.AdministrationComponents.Endpoints
+namespace SM.EmployeeAffairs.Components.Pages.AdministrationComponents.Endpoints;
+
+public static class GetAllAdministrationsEndpoint
 {
-    public static class GetAllAdministrationsEndpoint
+    public static void MapGetAllAdministrationsEndpoint(this IEndpointRouteBuilder adminApi)
     {
-        public static void MapGetAllAdministrationsEndpoint(this IEndpointRouteBuilder adminApi)
+        adminApi.MapGet("/", async ([FromServices] IDbContextFactory<ApplicationDbContext> dbContextFactory) =>
         {
-            adminApi.MapGet("/", async ([FromServices] IDbContextFactory<ApplicationDbContext> dbContextFactory) =>
-            {
-                var db = dbContextFactory.CreateDbContext();
-                return await db.Administrations.ToListAsync();
-            });
-        }
+            var db = dbContextFactory.CreateDbContext();
+            return await db.Administrations.ToListAsync();
+        });
     }
 }

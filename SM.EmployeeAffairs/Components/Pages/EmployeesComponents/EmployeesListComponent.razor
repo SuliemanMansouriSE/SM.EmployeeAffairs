@@ -1,0 +1,122 @@
+@using SM.EmployeeAffairs.Data.Entities
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@rendermode InteractiveServer
+
+<p> @AdministrationId</p>
+
+<MudTable Items="Employees"
+          Hover="true"
+          Loading="loading"
+          LoadingProgressColor="Color.Info"
+          Dense="true">
+    <ToolBarContent>
+        <MudSpacer />
+        <MudButton Color="Color.Primary"
+                   Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   @onclick="OpenAddEmployeeDialog">≈÷«›… „ÊŸ›</MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>«·—ﬁ„ «·ÊŸÌ›Ì</MudTh>
+        <MudTh>«·«”„ (⁄—»Ì)</MudTh>
+        <MudTh>«·«”„ (≈‰Ã·Ì“Ì)</MudTh>
+        <MudTh>«·Â« ›</MudTh>
+        <MudTh>«·»—Ìœ «·≈·ﬂ —Ê‰Ì</MudTh>
+        <MudTh>«·⁄„·Ì« </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="«·—ﬁ„ «·ÊŸÌ›Ì">@context.EmployementNumber</MudTd>
+        <MudTd DataLabel="«·«”„ (⁄—»Ì)">@context.NameAr</MudTd>
+        <MudTd DataLabel="«·«”„ (≈‰Ã·Ì“Ì)">@context.NameEng</MudTd>
+        <MudTd DataLabel="«·Â« ›">@context.Phone</MudTd>
+        <MudTd DataLabel="«·»—Ìœ «·≈·ﬂ —Ê‰Ì">@context.Email</MudTd>
+        <MudTd>
+            <MudTooltip Text=" ⁄œÌ·">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" OnClick="() => OpenEditDialog(context)" />
+            </MudTooltip>
+            <MudTooltip Text="Õ–›">
+                <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteEmployee(context.Id)" />
+            </MudTooltip>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+
+
+@code {
+    [CascadingParameter(Name = "AdministrationId")] public Guid AdministrationId { get; set; }
+    
+
+    public List<Employee> Employees = new();
+    private bool loading = false;
+
+    private bool addEmployeeDialogOpen = false;
+    private Employee selectedEmployee = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadEmployees();
+       
+    }
+    
+    private void OpenAddEmployeeDialog()
+    {
+        selectedEmployee = new Employee { AdministrationId = AdministrationId };
+        
+        var parameteres = new DialogParameters
+        {
+            ["EmployeeId"] = null,
+            ["AdministrationId"] = AdministrationId,
+            ["OnSave"] = EventCallback.Factory.Create(this, OnDialogSave)
+        };
+
+        DialogService.ShowAsync<EmployeeEditComponent>(
+            "≈÷«›… „ÊŸ›",
+            parameteres,
+            new DialogOptions { MaxWidth = MaxWidth.Medium }
+        );
+
+    }
+
+    private void OpenEditDialog(Employee employee)
+    {
+        selectedEmployee = employee;
+        var parameters = new DialogParameters
+        {
+            ["EmployeeId"] = employee.Id,
+            ["AdministrationId"] = employee.AdministrationId,
+            ["OnSave"] = EventCallback.Factory.Create(this, OnDialogSave)
+        };
+
+        DialogService.ShowAsync<EmployeeEditComponent>(" ⁄œÌ· »Ì«‰«  „ÊŸ›",
+        parameters,
+        new DialogOptions { MaxWidth = MaxWidth.Small });
+    }
+    private async Task LoadEmployees()
+    {
+        loading = true;
+        Employees = await Http.GetFromJsonAsync<List<Employee>>($"/api/employees/by-administration/{AdministrationId}") ?? new();
+        loading = false;
+    }
+    
+
+    private async Task OnDialogSave()
+    {
+        await LoadEmployees();
+    }
+    private async Task DeleteEmployee(Guid employeeId)
+    {
+        var response = await Http.DeleteAsync($"/api/employees/{employeeId}");
+        if (response.IsSuccessStatusCode)
+        {
+            Employees = Employees.Where(e => e.Id != employeeId).ToList();
+            Snackbar.Add(" „ Õ–› «·„ÊŸ› »‰Ã«Õ", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("›‘· Õ–› «·„ÊŸ›", Severity.Error);
+        }
+    }
+}

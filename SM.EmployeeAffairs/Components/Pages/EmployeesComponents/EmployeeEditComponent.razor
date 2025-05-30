@@ -1,0 +1,128 @@
+﻿@using SM.EmployeeAffairs.Data.Entities
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+@if (Employee == null)
+{
+    <div class="d-flex justify-center align-center ma-auto">
+        <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+    </div>
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <MudForm Model="Employee" >
+                <MudGrid Spacing="1">
+                    <MudItem lg="12" md="12" xs="12">
+                        <MudTextField T="string"
+                                      Label="الإسم"
+                                      @bind-Value="Employee.NameAr"
+                                      Required="true"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined" />
+
+                    </MudItem>
+                    <MudItem lg="12" md="12" xs="12">
+                        <MudTextField T="string"
+                                      Label="Name"
+                                      @bind-Value="Employee.NameEng"
+                                      Required="true"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined" />
+
+                    </MudItem>
+
+                    <MudItem lg="4" md="4" xs="12">
+                        <MudTextField T="int"
+                                      Label="الرقم الوظيفي"
+                                      @bind-Value="Employee.EmployementNumber"
+                                      Required="true"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined" />
+
+                    </MudItem>
+                    <MudItem lg="4" md="4" xs="12">
+                        <MudTextField T="string"
+                                      Label="الرقم الوطني"
+                                      @bind-Value="Employee.NID"
+                                      Required="true"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined" />
+
+                    </MudItem>
+                    <MudItem lg="4" md="4" xs="12">
+                        <MudTextField T="string"
+                                      Label="رقم النقال"
+                                      @bind-Value="Employee.Phone"
+                                      Required="true"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined" />
+
+                    </MudItem>
+                    <MudItem lg="6" md="6" xs="12">
+                        <MudTextField T="string"
+                                      Label="البريد الالكتروني"
+                                      @bind-Value="Employee.Email"
+                                      Required="true"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined" />
+
+                    </MudItem>
+                    <MudItem lg="6" md="6" xs="12">
+                        <MudTextField T="string"
+                                      Label="رقم الجواز"
+                                      @bind-Value="Employee.PassportNumber"
+                                      Required="true"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined" />
+
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </DialogContent>
+        <DialogActions>
+
+            <MudSpacer />
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveEmployee">حفظ</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="Cancel">تراجع</MudButton>
+
+        </DialogActions>
+    </MudDialog>
+}
+
+@code {
+    [Parameter] public Guid EmployeeId { get; set; }
+    [Parameter] public Guid AdministrationId { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [CascadingParameter] public required IMudDialogInstance MudDialog { get; set; }
+
+    private Employee? Employee { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (EmployeeId == Guid.Empty)
+        {
+            Employee = new();
+            Employee.AdministrationId = AdministrationId;
+        }
+        else
+        {
+            Employee = await Http.GetFromJsonAsync<Employee>($"/api/employees/{EmployeeId}");
+        }
+    }
+
+    private async Task SaveEmployee()
+    {
+        if (Employee is null) return;
+
+        await Http.PostAsJsonAsync<Employee>($"/api/employees", Employee);
+        await OnSave.InvokeAsync();
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

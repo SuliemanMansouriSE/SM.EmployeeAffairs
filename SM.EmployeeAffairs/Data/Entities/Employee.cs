@@ -11,6 +11,6 @@
         public string Email { get; set; }
         public string PassportNumber { get; set; }
         public Guid AdministrationId { get; set; }
-        public Administration Administration { get; set; } = new();
+        public Administration Administration { get; set; } 
     }
 }

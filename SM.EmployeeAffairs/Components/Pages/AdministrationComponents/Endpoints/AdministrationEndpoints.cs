@@ -10,6 +10,8 @@ namespace SM.EmployeeAffairs.Components.Pages.AdministrationComponents.Endpoints
             adminApi.MapPostAdministrationEndpoint();
             adminApi.MapPutAdministrationEndpoint();
             adminApi.MapDeleteAdministrationEndpoint();
+            // Register employee endpoints (updated namespace)
+            SM.EmployeeAffairs.Components.Pages.EmployeesComponents.Endpoints.EmployeeEndpoints.MapEmployeeEndpoints(app);
         }
     }
 }
