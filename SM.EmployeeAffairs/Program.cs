@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components.Authorization;
-// With this corrected line:
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
@@ -32,7 +31,6 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddHttpClient("Default", client =>
 {
-    
     client.BaseAddress = new Uri("https://localhost:7065/"); // fallback to HTTPS port from launchSettings.json
 });
 
