@@ -78,7 +78,7 @@
         };
 
         var _dialogOptions = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackdropClick = false };
-        var msg = $"سيتم حذف الموظف: {administration.Name}";
+        var msg = $"سيتم حذف الإدارة: {administration.Name}";
         var dialog = await DialogService.ShowAsync<ConfirmDelete>(msg, parameters, _dialogOptions);
         var result = await dialog.Result;
 
