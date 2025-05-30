@@ -94,6 +94,7 @@ else
             var response = await Http.PutAsJsonAsync($"/api/administrations/{Administration.Id}", Administration);
             if (response.IsSuccessStatusCode)
             {
+                
                 Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
                 Snackbar.Add("تم الحفظ بنجاح", Severity.Success);
             }

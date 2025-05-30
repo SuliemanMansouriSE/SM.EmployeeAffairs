@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using SM.EmployeeAffairs.Data;
 using SM.EmployeeAffairs.Data.Entities;
+using Microsoft.Data.SqlClient;
 
 namespace SM.EmployeeAffairs.Components.Pages.EmployeesComponents.Endpoints
 {
@@ -31,18 +32,22 @@ namespace SM.EmployeeAffairs.Components.Pages.EmployeesComponents.Endpoints
             empApi.MapPost("/", async ([FromServices] IDbContextFactory<ApplicationDbContext> dbContextFactory, Employee employee) =>
             {
                 var db = dbContextFactory.CreateDbContext();
-                var tmp = db.Employees.FirstOrDefault(x => x.Id == employee.Id);
-                if (tmp is null)
+                try
                 {
                     await db.Employees.AddAsync(employee);
-
+                    await db.SaveChangesAsync();
+                    return Results.Created($"/api/employees/{employee.Id}", employee);
                 }
-                else
+                catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && (sqlEx.Number == 2601 || sqlEx.Number == 2627))
                 {
-                    db.Employees.Update(employee);
+                    // 2601: Cannot insert duplicate key row in object
+                    // 2627: Violation of unique constraint
+                    return Results.BadRequest("ÌÊÃœ „ÊŸ› »‰›” —ﬁ„ «·Â« › Ê «·»—Ìœ «·≈·ﬂ —Ê‰Ì Ê «·—ﬁ„ «·Êÿ‰Ì.");
                 }
-                await db.SaveChangesAsync();
-                return Results.Created($"/api/employees/{employee.Id}", employee);
+                catch (Exception)
+                {
+                    return Results.BadRequest("ÕœÀ Œÿ√ √À‰«¡ Õ›Ÿ «·„ÊŸ›.");
+                }
             });
         }
     }

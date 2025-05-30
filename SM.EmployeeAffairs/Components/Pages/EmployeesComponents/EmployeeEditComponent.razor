@@ -116,9 +116,26 @@ else
     {
         if (Employee is null) return;
 
-        await Http.PostAsJsonAsync<Employee>($"/api/employees", Employee);
-        await OnSave.InvokeAsync();
-        MudDialog.Close(DialogResult.Ok(true));
+        try
+        {
+            var response = await Http.PostAsJsonAsync<Employee>($"/api/employees", Employee);
+            if (response.IsSuccessStatusCode)
+            {
+                await OnSave.InvokeAsync();
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+                Snackbar.Add(errorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+            Snackbar.Add("حدث خطأ أثناء حفظ الموظف: " + ex.Message, Severity.Error);
+        }
     }
 
     private void Cancel()
