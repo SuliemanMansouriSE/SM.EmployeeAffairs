@@ -7,6 +7,9 @@ using SM.EmployeeAffairs.Components.Account;
 using SM.EmployeeAffairs.Components.Pages.AdministrationComponents.Endpoints;
 using SM.EmployeeAffairs.Data;
 using Microsoft.OpenApi.Models;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("SM.EmployeeAffairs.Tests")]
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,3 +102,5 @@ app.MapAdditionalIdentityEndpoints();
 app.MapAdministrationEndpoints();
 
 app.Run();
+
+public partial class Program { }
