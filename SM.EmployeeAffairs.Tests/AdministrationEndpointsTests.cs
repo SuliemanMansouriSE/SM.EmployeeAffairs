@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using SM.EmployeeAffairs.Data.Entities;
-using Xunit;
+using System.Net.Http.Json;
 
 namespace SM.EmployeeAffairs.Tests
 {
@@ -21,6 +16,8 @@ namespace SM.EmployeeAffairs.Tests
         [Fact]
         public async Task GetAllAdministrations_ReturnsSuccess()
         {
+            var testDbContextFactory = new TestDbContextFactory();
+
             var response = await _client.GetAsync("/api/administrations");
             response.EnsureSuccessStatusCode();
 
