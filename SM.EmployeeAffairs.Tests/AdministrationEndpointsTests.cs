@@ -1,23 +1,32 @@
-using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using SM.EmployeeAffairs.Data;
 using SM.EmployeeAffairs.Data.Entities;
 using System.Net.Http.Json;
 
 namespace SM.EmployeeAffairs.Tests
 {
-    public class AdministrationEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
+    public class AdministrationEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly HttpClient _client;
 
-        public AdministrationEndpointsTests(WebApplicationFactory<Program> factory)
+        public AdministrationEndpointsTests(CustomWebApplicationFactory factory)
         {
             _client = factory.CreateClient();
+
+        }
+
+        [Fact]
+        public void CanResolveDbContext()
+        {
+            var factory = new CustomWebApplicationFactory();
+            using var scope = factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            Assert.NotNull(db);
         }
 
         [Fact]
         public async Task GetAllAdministrations_ReturnsSuccess()
         {
-            var testDbContextFactory = new TestDbContextFactory();
-
             var response = await _client.GetAsync("/api/administrations");
             response.EnsureSuccessStatusCode();
 
@@ -28,7 +37,11 @@ namespace SM.EmployeeAffairs.Tests
         [Fact]
         public async Task GetAdministrationById_ReturnsNotFound_ForInvalidId()
         {
-            var response = await _client.GetAsync($"/api/administrations/{Guid.NewGuid()}");
+            //Arrange: Use a GUID that does not exist in the database
+            var id = Guid.NewGuid();
+            //Act: Attempt to get the administration by the invalid ID
+            var response = await _client.GetAsync($"/api/administrations/{id}");
+            //Assert: Verify that the response status code is NotFound (404)
             Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
         }
 
@@ -53,13 +66,20 @@ namespace SM.EmployeeAffairs.Tests
         public async Task DeleteAdministration_RemovesAdministration()
         {
             // Arrange: Create a new administration to delete
+            var id = Guid.NewGuid();
             var newAdmin = new Administration
-            {
+            { 
+                Id = id,
                 Name = "Admin to Delete",
                 Description = "Description to Delete"
             };
 
             var createResponse = await _client.PostAsJsonAsync("/api/administrations", newAdmin);
+            if (!createResponse.IsSuccessStatusCode)
+            {
+                var errorContent = await createResponse.Content.ReadAsStringAsync();
+                throw new Exception(errorContent);
+            }
             createResponse.EnsureSuccessStatusCode();
 
             var createdAdmin = await createResponse.Content.ReadFromJsonAsync<Administration>();

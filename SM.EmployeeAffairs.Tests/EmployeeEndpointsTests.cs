@@ -1,19 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
 using SM.EmployeeAffairs.Data.Entities;
-using Xunit;
+using System.Net.Http.Json;
 
 namespace SM.EmployeeAffairs.Tests
 {
-    public class EmployeeEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
+    public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly HttpClient _client;
 
-        public EmployeeEndpointsTests(WebApplicationFactory<Program> factory)
+        public EmployeeEndpointsTests(CustomWebApplicationFactory factory)
         {
             _client = factory.CreateClient();
         }
